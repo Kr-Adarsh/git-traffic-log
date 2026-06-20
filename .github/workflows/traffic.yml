@@ -24,6 +24,22 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # ── THE FIX: pull historical CSV into working dir BEFORE the script runs
+      - name: Restore existing CSV from analytics branch
+        run: |
+          mkdir -p traffic
+          if git ls-remote --exit-code origin analytics > /dev/null 2>&1; then
+            if git show origin/analytics:traffic/traffic_log.csv \
+                > traffic/traffic_log.csv 2>/dev/null; then
+              echo "Restored existing CSV ($(wc -l < traffic/traffic_log.csv) lines)"
+            else
+              echo "No CSV on analytics branch yet — starting fresh"
+              rm -f traffic/traffic_log.csv
+            fi
+          else
+            echo "analytics branch does not exist yet — starting fresh"
+          fi
+
       - name: Fetch and store traffic (all repos)
         env:
           TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
@@ -59,3 +75,25 @@ jobs:
           git commit -m "chore: update traffic log $(date -u +'%Y-%m-%d %H:%M UTC')"
           git push origin analytics
           echo "Pushed to analytics"
+
+  notify:
+    needs: capture
+    runs-on: ubuntu-latest
+    if: needs.capture.result == 'failure'
+    steps:
+      - name: Send failure email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          secure: true
+          from: ${{ secrets.SMTP_FROM }}
+          to: ${{ secrets.NOTIFY_TO }}
+          subject: "Traffic capture failed for ${{ github.repository }} (run #${{ github.run_number }})"
+          body: |
+            The 'Capture GitHub traffic' workflow failed.
+            Repository: ${{ github.repository }}
+            Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Please check workflow logs and verify the `TRAFFIC_TOKEN` secret and API access.

@@ -7,3 +7,4 @@ traffic/
 traffic_dashboard.html
 .DS_Store
 Thumbs.db
+.venv/

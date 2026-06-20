@@ -108,12 +108,14 @@ def fetch_traffic(repo_full_name):
 
 # ── CSV handling
 def load_existing_keys():
-    """Return a set of (repo, type, timestamp_utc) already in the CSV."""
     if not os.path.exists(LOG_PATH):
         return set()
     with open(LOG_PATH, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        return {(row["repo"], row["type"], row["timestamp_utc"]) for row in reader}
+        return {
+            (row["repo"], row["type"], row["timestamp_utc"].strip().replace(" ", "T").replace("+00:00", "Z"))
+            for row in reader
+        }
 
 # ── Main
 def main():
