@@ -46,7 +46,7 @@ The script figures out which repos have the right permissions and skips the rest
 
 Drop these files into your repo's **default branch** (or create a dedicated `traffic-tracker` repo):
 
-Direct files download: [Core files](https://github.com/Kr-Adarsh/git-traffic-log/releases/download/v2.0/git-traffic-log.zip)
+Direct files download: [Core files](https://github.com/Kr-Adarsh/git-traffic-log/releases/download/v2.0/Git-Tracker.zip)
 
 Manually:
 
