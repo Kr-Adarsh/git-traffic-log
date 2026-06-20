@@ -1,3 +1,12 @@
+"""
+This file is only for the old users to resolve the issues with git-traffic-log's old version, new users don't need to run this, it's unnecessary.
+
+- recover_traffic.py is used to recover the traffic log from the analytics branch extracting all the commits and then creating a new traffic log, it concatenates all 14days chunks in commits and then deduplicating them, to recover all the traffic logs which got lost due to an issue in old version.
+
+Usage:
+    python recover_traffic.py
+"""
+
 import subprocess
 import sys
 from io import StringIO
