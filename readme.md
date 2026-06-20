@@ -10,6 +10,20 @@ The best part, you just need one token and it auto-discovers all your repos. Set
 ![traffic_log](assets/image.png)
 ---
 
+## Important Update for Old users: 
+The workflow was overwriting traffic_log.csv with only the latest GitHub 14-day window, so older traffic history could disappear.
+
+- Fix: pull the latest changes, 
+     run: 
+```bash 
+git pull
+python recover_traffic.py
+```
+ref: [#1 Issue](https://github.com/Kr-Adarsh/git-traffic-log/issues/1)
+
+Simply go with the flow, replace analytics/traffic/traffic_log.csv with traffic_log_recovered.csv, commit it to the analytics branch, and push. After that, run the workflow once manually. New traffic will append normally from then on.
+
+
 ## how it works
 
 A workflow runs every day at 00:15 UTC, discovers all repos accessible through your token, fetches their clone and view stats from the GitHub API, and appends only new rows to `traffic/traffic_log.csv` on a separate `analytics` branch. Your `main`/`master` branch is never touched.
